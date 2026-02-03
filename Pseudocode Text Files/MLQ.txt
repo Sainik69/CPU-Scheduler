@@ -1,0 +1,27 @@
+Take number of processes n
+For each process
+   Take process id, arrival time, burst time
+   Assign process to a queue (System / Interactive / Batch)
+
+Create multiple queues
+   Queue 1 → High priority
+   Queue 2 → Medium priority
+   Queue 3 → Low priority
+
+Set time = 0
+
+While all processes are not completed
+   If Queue 1 is not empty
+      Schedule processes of Queue 1 using Round Robin
+   Else if Queue 2 is not empty
+      Schedule processes of Queue 2 using SJF or FCFS
+   Else if Queue 3 is not empty
+      Schedule processes of Queue 3 using FCFS
+   End if
+
+   Update time, remaining burst time and completed processes
+End while
+
+
+
+

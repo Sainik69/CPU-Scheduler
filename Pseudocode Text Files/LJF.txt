@@ -1,0 +1,34 @@
+Take number of processes n
+For each process
+   Take process id, arrival time and burst time
+
+Set time = 0
+Set completed = 0
+Mark all processes as not done
+
+While completed is less than n
+   max_burst = very small value
+   selected = -1
+
+   For each process
+      If process has arrived (arrival time <= time)
+      and process is not completed
+         If its burst time is greater than max_burst
+            Update max_burst
+            Select this process
+         End if
+      End if
+   End for
+
+   If no process is selected
+      Increase time by 1 (CPU is idle)
+   Else
+      Set start time of selected process = time
+      Add burst time to time
+      Set completion time
+      Calculate turnaround time
+      Calculate waiting time
+      Mark process as completed
+      Increase completed count
+   End if
+End while

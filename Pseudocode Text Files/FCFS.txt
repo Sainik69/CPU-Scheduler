@@ -1,0 +1,18 @@
+Take number of processes n
+For each process
+   Take process id, arrival time and burst time
+
+Set time = 0
+
+For each process in order of arrival
+   If arrival time is greater than current time
+      Set time = arrival time   // CPU is idle
+   End if
+
+   Set start time = current time
+   Add burst time to time
+   Set completion time
+
+   Calculate turnaround time
+   Calculate waiting time
+End for

@@ -1,178 +1,180 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 struct process
 {
-    
-    int algo;
+    int level;
+    int completed;
     char p_id[6];
     int a_t;
     int b_t;
     int c_t;
-    int tat;
-    int w_t;
-    int s_t;
     int r_t;
+    int tat; 
+    int w_t; 
 };
 
-// Algorithm Functions
-void fcfs(struct process data[], int start , int end)
+int compare(const void *a, const void *b)
 {
-    int time = 0;
-    for (int i = start; i < end; i++)
-    {
-
-        if (data[i].a_t <= time)
-        {
-            data[i].s_t = time;
-            time += data[i].b_t;
-        }
-        else
-        {
-            time = data[i].a_t;
-
-            data[i].s_t = time;
-            time += data[i].b_t;
-        }
-        data[i].c_t = time;
-        data[i].tat = data[i].c_t - data[i].a_t;
-        data[i].w_t = data[i].tat - data[i].b_t;
-        data[i].r_t = data[i].w_t;
-    }
+    struct process *p1 = (struct process *)a;
+    struct process *p2 = (struct process *)b;
+    return p1->a_t - p2->a_t;
 }
-
-void sjf(struct process data[], int start , int end)
+int available(int s, int e, int level, struct process data[], int time)
 {
-    int time = 0, completed = 0;
-    int n = end - start ;
-    int done[n];
-
-    for (int i = 0; i < n; i++)
-        done[i] = 0;
-
-    while (completed < n)
+    for (int i = s; i < e; i++)
     {
-        int idx = -1;
-        int min_bt = 9999;
-
-        for (int i = 0; i < n; i++)
-        {
-            if (data[start + i].a_t <= time && done[i] == 0)
-            {
-                if (data[start + i].b_t < min_bt)
-                {
-                    min_bt = data[start + i].b_t;
-                    idx = i;
-                }
-            }
-        }
-
-        if (idx == -1)
-        {
-            time++;
-        }
-        else
-        {
-            data[start + idx].s_t = time;
-            time += data[start + idx].b_t;
-
-            data[start + idx].c_t = time;
-            data[start + idx].tat = data[start + idx].c_t - data[start + idx].a_t;
-            data[start + idx].w_t = data[start + idx].tat - data[start + idx].b_t;
-
-            done[idx] = 1;
-            completed++;
-        }
+        if (!data[i].completed && data[i].level == level && data[i].a_t <= time && data[i].r_t > 0)
+            return i; // return actual index
     }
+    return -1; // no ready process
 }
 
-void rr(struct process data[], int start , int end) {
-    int time = 0, completed = 0;
-    int n = end - start ;
-    int done[n];
-    int quantum = 2; // Time quantum
+int main()
+{
+    
 
-    for (int i = 0; i < n; i++)
-        done[i] = 0;
+    int Levels = 3;
 
-    int rem_bt[n];
-    for (int i = 0; i < n; i++)
-        rem_bt[i] = data[start + i].b_t;
-
-    while (completed < n)
-    {
-        int executed = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-            if (data[start + i].a_t <= time && done[i] == 0)
-            {
-                if (rem_bt[i] > 0)
-                {
-                    executed = 1;
-
-                    if (rem_bt[i] > quantum)
-                    {
-                        time += quantum;
-                        rem_bt[i] -= quantum;
-                    }
-                    else
-                    {
-                        time += rem_bt[i];
-                        data[start + i].s_t = time - rem_bt[i];
-                        rem_bt[i] = 0;
-
-                        done[i] = 1;
-                    }
-                }
-            }
-        }
-    }
-}
-
-int main() {
-    int Levels  ;
-    int (*algo_out[3])(struct process *data ,int start , int end )={0,0,0} ;
     int total_proc = 0;
-    printf("Enter number of Levels: \n");
-    scanf("%d", &Levels);
+
     int n_proc[Levels];
-    for(int i=0; i<Levels; i++) {
-        
+    for (int i = 0; i < Levels; i++)
+    {
+
         int n;
-        printf("Enter number of processes in Level %d: ", i+1);
+        printf("Enter number of processes in Level %d: ", i + 1);
         scanf("%d", &n);
         n_proc[i] = n;
     }
     printf("now further you have to give details for each process in each level start from level 1 to %d \n", Levels);
-    for(int i=0; i<Levels; i++) {
+    for (int i = 0; i < Levels; i++)
+    {
         total_proc += n_proc[i];
     }
     // taking all process details
     struct process data[total_proc];
-    int complete = 0;
-    int algo_in[Levels];
-    for(int i=0; i<Levels; i++) {
-        
-        printf("select algorithm for Level %d\n", i+1);
-        printf("1. FCFS\n2. SJF\n3. Round Robin\n");
-        scanf("%d", &algo_in[i]);
-        for(int j = complete ; j < complete + n_proc[i]; j++) {
-            printf("Enter details for process %d in Level %d\n", j - complete + 1, i + 1);
-            printf("Process ID: ");    // Process ID input
-            scanf("%s", data[j].p_id); 
-            printf("Arrival Time: "); 
+
+    int level_start[Levels];
+    int level_end[Levels];
+
+    level_start[0] = 0;
+    for (int i = 0; i < Levels; i++)
+    {
+        if (i > 0)
+            level_start[i] = level_end[i - 1];
+
+        level_end[i] = level_start[i] + n_proc[i];
+    }
+    for (int i = 0; i < Levels; i++)
+    {
+
+        for (int j = level_start[i]; j < level_end[i]; j++)
+        {
+            printf("Enter details for process %d in Level %d\n", j - level_start[i] + 1, i + 1);
+            printf("Process ID: "); // Process ID input
+            scanf("%s", data[j].p_id);
+            printf("Arrival Time: ");
             scanf("%d", &data[j].a_t);
             printf("Burst Time: ");
             scanf("%d", &data[j].b_t);
-            data[j].algo = algo_in[i]; // storing algorithm choice
+            data[j].r_t = data[j].b_t;
+            data[j].level = i;
+            data[j].completed = 0;
         }
-        complete += n_proc[i];
-
     }
-    complete = 0;
-    for (int i = 0 ; i <Levels ; i++)
-   {
-    int start = complete ;
-    int end = complete + n_proc[i];
-    algo_out[algo_in[i]](data , start , end ) ;}
-    return 0; 
+    // calculate level start and end indices
+
+    // sort processes based on arrival time using qsort of each queue
+    for (int i = 0; i < Levels; i++)
+    {
+        qsort(&data[level_start[i]], level_end[i] - level_start[i], sizeof(struct process), compare);
+    }
+    int complete = 0;
+    int time = 0;
+    char gantt[1000][6]; // store executed process ID per unit time
+    int gantt_time = 0;
+
+    while (complete < total_proc)
+    {
+        int idx = -1;
+
+        // Level 0
+        idx = available(level_start[0], level_end[0], 0, data, time);
+        if (idx != -1)
+        {
+            data[idx].r_t--;
+            strcpy(gantt[gantt_time], data[idx].p_id);
+            gantt_time++;
+            time++;
+
+            if (data[idx].r_t == 0)
+            {
+                data[idx].completed = 1;
+                data[idx].c_t = time;
+                complete++;
+            }
+            continue;
+        }
+
+        // Level 1
+        idx = available(level_start[1], level_end[1], 1, data, time);
+        if (idx != -1)
+        {
+            data[idx].r_t--;
+            strcpy(gantt[gantt_time], data[idx].p_id);
+            gantt_time++;
+            time++;
+
+            if (data[idx].r_t == 0)
+            {
+                data[idx].completed = 1;
+                data[idx].c_t = time;
+                complete++;
+            }
+            continue;
+        }
+
+        // Level 2
+        idx = available(level_start[2], level_end[2], 2, data, time);
+        if (idx != -1)
+        {
+            data[idx].r_t--;
+            strcpy(gantt[gantt_time], data[idx].p_id);
+            gantt_time++;
+            time++;
+
+            if (data[idx].r_t == 0)
+            {
+                data[idx].completed = 1;
+                data[idx].c_t = time;
+                complete++;
+            }
+            continue;
+        }
+
+        // CPU idle
+        strcpy(gantt[gantt_time], "IDLE");
+        gantt_time++;
+        time++;
+    }
+    for (int i = 0; i < total_proc; i++)
+    {
+        data[i].tat = data[i].c_t - data[i].a_t;
+        data[i].w_t = data[i].tat - data[i].b_t;
+    }
+    // print process details
+    for (int i = 0; i < total_proc; i++)
+    {
+        printf("%s\t%d\t%d\t%d\t%d\t%d\t%d\n",
+               data[i].p_id,
+               data[i].a_t,
+               data[i].b_t,
+               data[i].c_t,
+               data[i].tat,
+               data[i].w_t,
+               data[i].level);
+    }
+    return 0;
 }

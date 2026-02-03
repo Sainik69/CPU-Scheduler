@@ -1,0 +1,31 @@
+Take number of processes n
+For each process
+   Take process id, arrival time and burst time
+
+Take time quantum tq
+
+Set time = 0
+Set completed = 0
+For each process
+   remaining_burst = burst time
+
+While completed is less than n
+   For each process in order
+      If process has arrived (arrival time <= time)
+      and remaining burst time > 0
+         If remaining burst time > time quantum
+            Execute process for time quantum
+            Subtract time quantum from remaining burst time
+            Add time quantum to time
+         Else
+            Execute process for remaining burst time
+            Add remaining burst time to time
+            Set remaining burst time = 0
+            Set completion time
+            Calculate turnaround time
+            Calculate waiting time
+            Increase completed count
+         End if
+      End if
+   End for
+End while

@@ -1,0 +1,49 @@
+Take details of tasks
+   The computer first notes:
+   How many tasks are there
+   When each task arrives
+   How much time each task needs
+   It also remembers:
+      How much time is still left for each task
+      Whether a task has started before or not
+
+Start the clock
+   The computer starts its clock at time 0
+   No task is finished yet
+
+Repeat until all tasks are done
+   The computer keeps repeating the following steps:
+
+Choose which task to work on
+   At the current time, the computer:
+      Looks at all tasks that have already arrived
+      Ignores finished tasks
+      Picks the task that needs the least time left
+
+If no task is ready
+   If no task has arrived yet:
+   The computer does nothing (waits)
+   Time moves forward by 1 unit
+
+Start the task (first time only)
+   If the chosen task is running for the first time:
+   The computer remembers the start time  This helps later to know how long the task waited before starting
+
+Do the task for a short time
+   The computer works on the task for 1 unit of time
+   The remaining time of that task becomes smaller
+   Time moves forward
+   After every small step, the computer checks again which task is shortest
+
+When a task finishes
+   When a task’s remaining time becomes zero:
+   The task is finished
+   The computer calculates:
+   Total time taken
+      Waiting time
+      Response time
+      Marks the task as completed
+
+Stop when all tasks are finished
+   Once all tasks are done:
+   The computer stops scheduling
